@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "886958340235",
+    "firebase_url": "https://myhitha-e99e0.firebaseio.com",
+    "project_id": "myhitha-e99e0",
+    "storage_bucket": "myhitha-e99e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886958340235:android:4d6975080a6302b291fc8e",
+        "android_client_info": {
+          "package_name": "com.example.myhitha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886958340235-uga3n1kauka2oc4blubt5ulmr350t3m8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.myhitha",
+            "certificate_hash": "ab1fb9627cdf9aedd8312ee9efbbf06a0d5ebefc"
+          }
+        },
+        {
+          "client_id": "886958340235-pl1ebad1o0jaacq0lem69n3vp9pkagd0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMJwAwfpnQnZmDWzcuLMtV-qBtBE0RVqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886958340235-pl1ebad1o0jaacq0lem69n3vp9pkagd0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "886958340235-0op2l6ia6dsjn9rfibi31n2he6tvdpvq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myhitha"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
