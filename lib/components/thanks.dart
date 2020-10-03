@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myhitha/components/orders.dart';
 import 'package:myhitha/cubit/counter_cubit.dart';
-import 'package:get/get.dart';
-import 'package:myhitha/model/order.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class Thanks extends StatefulWidget {
   @override
