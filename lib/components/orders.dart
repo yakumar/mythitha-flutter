@@ -231,15 +231,6 @@ class _OrdersState extends State<Orders> {
         ));
   }
 
-  // _openOrder(Order order) {
-  //   Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) => SingleOrder(
-  //                 order: order,
-  //               )));
-  // }
-
   // _futureBuilder(BuildContext context) {
   //   return FutureBuilder(
   //       future: _fetchOrders,
