@@ -79,6 +79,7 @@ class AuthService {
     UserCredential response =
         await FirebaseAuth.instance.signInWithCredential(authCreds);
     debugPrint('Firebase credential, ${response.user}');
+
     Get.off(HomeCard());
 
     // Navigator.pushNamedAndRemoveUntil(

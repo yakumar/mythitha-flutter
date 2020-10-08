@@ -36,6 +36,7 @@ dependencies:
   equatable: ^1.2.5
   get: ^3.11.1
   flutter_launcher_icons: "^0.8.0"
+  intl: ^0.16.1
 
 dev_dependencies:
   flutter_test:
