@@ -122,6 +122,15 @@ class _LoginState extends State<Login> {
                     child: codeSent ? Text('Login') : Text('Generate OTP'),
                   ),
                 ),
+                codeSent
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6.0),
+                        child: FlatButton(
+                          onPressed: () => verifyPhone(phoneNo, context),
+                          child: Text('resend OTP'),
+                        ),
+                      )
+                    : Container()
               ],
             ),
           ),
