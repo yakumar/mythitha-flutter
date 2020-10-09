@@ -1,4 +1,4 @@
-# Automatically generated on 2020-10-08 UTC from https://codemagic.io/app/5f78b0e5c184d32fc0148d11/settings
+# Automatically generated on 2020-10-09 UTC from https://codemagic.io/app/5f78b0e5c184d32fc0148d11/settings
 # Note that this configuration is not an exact match to UI settings. Review and adjust as necessary.
 
 workflows:
@@ -94,7 +94,7 @@ workflows:
         \ > $FCI_BUILD_DIR/ios/Runner/GoogleService-Info.plist\n   \n echo \"\\nListing\
         \ iOS Directory to confirm the GoogleService-Info.plist is there! \"\n ls\
         \ ios/Runner/\n"
-      - cd . && flutter build apk --debug
+      - cd . && flutter build apk --release
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
