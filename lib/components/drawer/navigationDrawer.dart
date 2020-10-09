@@ -33,7 +33,7 @@ class NavigationDrawer extends StatelessWidget {
                 text: 'Orders',
                 onTap: () => {
                       debugPrint(
-                          'User:: ${FirebaseAuth.instance.currentUser.phoneNumber}'),
+                          'User:: ${FirebaseAuth.instance.currentUser.email}'),
                       FirebaseAuth.instance.currentUser != null
                           ? Get.to(
                               Orders(

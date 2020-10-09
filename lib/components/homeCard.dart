@@ -99,7 +99,7 @@ class _HomeCardState extends State<HomeCard> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.local_grocery_store),
             title: Text('Vegetables'),
           ),
           BottomNavigationBarItem(

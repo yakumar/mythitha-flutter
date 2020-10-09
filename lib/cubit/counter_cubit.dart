@@ -4,8 +4,11 @@ import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 
 part 'counter_state.dart';
+
+var email = FirebaseAuth.instance.currentUser.email;
 
 class CounterCubit extends Cubit<CounterState> {
   CounterCubit()
@@ -47,6 +50,7 @@ class CounterCubit extends Cubit<CounterState> {
           'products': state.veggieListy,
           'cost_of_order': state.completeCart["cost"],
           'userid': 9,
+          'email': '${email}',
           'payment_type': state.completeCart["payment_type"] != null
               ? state.completeCart["payment_type"]
               : paymentType,

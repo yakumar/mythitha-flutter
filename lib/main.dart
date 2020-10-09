@@ -11,6 +11,7 @@ import './components/auth/login.dart';
 import 'package:get/get.dart';
 import './components/thanks.dart';
 import './components/orders.dart';
+import './components/auth/signin.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,6 +78,7 @@ class MyApp extends StatelessWidget {
             '/': (context) => HomeCard(),
             '/cart': (context) => Cart(),
             '/login': (context) => Login(),
+            '/signin': (context) => SignIn(),
             '/thanks': (context) => Thanks(),
             '/orders': (context) => Orders(
                   email: FirebaseAuth.instance.currentUser.email,

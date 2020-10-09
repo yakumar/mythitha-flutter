@@ -4,14 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import './authservice.dart';
 import 'package:get/get.dart';
 import '../homeCard.dart';
-import './signin.dart';
+import './login.dart';
 
-class Login extends StatefulWidget {
+class SignIn extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _SignInState createState() => _SignInState();
 }
 
-class _LoginState extends State<Login> {
+class _SignInState extends State<SignIn> {
   final _formKey = GlobalKey<FormState>();
   String email, password;
 
@@ -47,7 +47,7 @@ class _LoginState extends State<Login> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "MyHitha Login",
+                  "MyHitha Register",
                   style: TextStyle(fontSize: 25.0, color: Colors.black87),
                 ),
                 Container(
@@ -129,21 +129,29 @@ class _LoginState extends State<Login> {
                         //     : verifyPhone(phoneNo, context);
                       }
                     },
-                    child: Text('Sign In'),
+                    child: Text('Register'),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Spacer(),
-                    Expanded(child: Text('not registered..')),
-                    Expanded(
-                      child: FlatButton(
-                          onPressed: () => Get.off(SignIn()),
-                          child: Text('Register')),
-                    )
-                  ],
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Container(
+                      //   width: 30.0,
+                      // ),
+                      Expanded(child: Text('already registered..')),
+                      Expanded(
+                        child: FlatButton(
+                            onPressed: () => Get.off(Login()),
+                            child: Text('Login')),
+                      ),
+                      // Container(
+                      //   width: 30.0,
+                      // ),
+                    ],
+                  ),
                 )
                 // codeSent
                 //     ? Padding(
@@ -165,7 +173,7 @@ class _LoginState extends State<Login> {
   _signIn(String emaily, String passwordy) async {
     final _auth = FirebaseAuth.instance;
     try {
-      final newUser = await _auth.signInWithEmailAndPassword(
+      final newUser = await _auth.createUserWithEmailAndPassword(
           email: emaily, password: passwordy);
       if (newUser != null) {
         print('new User: ${newUser}');

@@ -35,7 +35,7 @@ class _OrdersState extends State<Orders> {
   Future<List> fetchOrders() async {
     final queryParameters = {'email': widget.email};
     final uri = Uri.https('arcane-springs-88980.herokuapp.com',
-        '/getUserOrders', {'phone': widget.email});
+        '/getUserOrders', {'email': widget.email});
 
     // debugPrint('URI ${uri}');
 
@@ -156,7 +156,10 @@ class _OrdersState extends State<Orders> {
           child: Column(
             children: [
               ListTile(
-                title: Text('Customer Name : ${order.customerName}'),
+                title: Text(
+                  'Customer Name : ${order.customerName}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                ),
                 // subtitle: Text('phone : ${order.phone}'),
                 subtitle: Container(
                   padding: EdgeInsets.all(8.0),
@@ -179,8 +182,23 @@ class _OrdersState extends State<Orders> {
                     )),
               ),
               ListTile(
+                title: Text(
+                  'phone : ${order.phone}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                // subtitle: Text('phone : ${order.phone}', style: TextStyle(fontWeight: FontWeight.bold),),
+              ),
+              ListTile(
+                title: Text(
+                  'Delivery address : ${order.customerAddress}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                // subtitle: Text('phone : ${order.phone}', style: TextStyle(fontWeight: FontWeight.bold),),
+              ),
+              // Text('phone : ${order.phone}', style: TextStyle(fontWeight: FontWeight.bold),),
+              ListTile(
                 title: Text('Order_id : ${order.orderId}'),
-                subtitle: Text('phone : ${order.phone}'),
+                // subtitle: Text('phone : ${order.phone}', style: TextStyle(fontWeight: FontWeight.bold),),
               ),
               ListTile(
                 title: Text('Payment type : ${order.paymentType}'),
