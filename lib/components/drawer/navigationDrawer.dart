@@ -37,8 +37,8 @@ class NavigationDrawer extends StatelessWidget {
                       FirebaseAuth.instance.currentUser != null
                           ? Get.to(
                               Orders(
-                                  phone: FirebaseAuth
-                                      .instance.currentUser.phoneNumber),
+                                  email:
+                                      FirebaseAuth.instance.currentUser.email),
                               arguments: '${FirebaseAuth.instance.currentUser}')
                           : null
                     }),

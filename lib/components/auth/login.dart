@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../utilities/sizes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './authservice.dart';
+import 'package:get/get.dart';
+import '../homeCard.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -10,7 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  String phoneNo, verificationId, smsCode;
+  String email, password;
 
   bool codeSent = false;
 
@@ -47,90 +49,97 @@ class _LoginState extends State<Login> {
                   "MyHitha Login",
                   style: TextStyle(fontSize: 25.0, color: Colors.lime),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                        child: Text(
-                      '+91',
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    )),
-                    Flexible(
-                      child: Container(
-                        width: 1.0,
-                        margin: EdgeInsets.symmetric(horizontal: 3.0),
-                      ),
-                    ),
-                    Flexible(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          // contentPadding: EdgeInsets.only(top: 0.01),
-                          helperText: 'Enter Mobile',
-                        ),
-                        textAlignVertical: TextAlignVertical.bottom,
-                        keyboardType: TextInputType.phone,
-                        onSaved: (val) => phoneNo = '+91${val}',
-
-                        // The validator receives the text that the user has entered.
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter Phone';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
+                Container(
+                  height: displayHeight(context) / 40,
                 ),
-                codeSent
-                    ? Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: displayWidth(context) / 6),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            helperText: 'Enter OTP',
-                          ),
-                          keyboardType: TextInputType.phone,
-                          onSaved: (val) => smsCode = val,
 
-                          // The validator receives the text that the user has entered.
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter OTP';
-                            }
-                            return null;
-                          },
-                        ),
-                      )
-                    : Container(),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: displayWidth(context) / 9),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Email',
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    onSaved: (val) {
+                      setState(() {
+                        email = val;
+                      });
+                    },
+                    textAlignVertical: TextAlignVertical.bottom,
+
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter Email';
+                      } else if (!value.contains('@')) {
+                        return 'Please enter valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Container(
+                  height: displayHeight(context) / 40,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: displayWidth(context) / 9),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'password',
+                    ),
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    onSaved: (val) {
+                      setState(() {
+                        password = val;
+                      });
+                    },
+                    textAlignVertical: TextAlignVertical.bottom,
+
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter password';
+                      } else if (value.length < 6) {
+                        return 'Please enter more than 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: RaisedButton(
+                    visualDensity: VisualDensity.adaptivePlatformDensity,
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();
 
-                        codeSent
-                            ? AuthService()
-                                .signInWithOTP(smsCode, verificationId, context)
-                            : verifyPhone(phoneNo, context);
+                        _signIn(email, password);
+
+                        // codeSent
+                        //     ? AuthService()
+                        //         .signInWithOTP(smsCode, verificationId, context)
+                        //     : verifyPhone(phoneNo, context);
                       }
                     },
-                    child: codeSent ? Text('Login') : Text('Generate OTP'),
+                    child: Text('Sign In'),
                   ),
                 ),
-                codeSent
-                    ? Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6.0),
-                        child: FlatButton(
-                          onPressed: () => verifyPhone(phoneNo, context),
-                          child: Text('resend OTP'),
-                        ),
-                      )
-                    : Container()
+                // codeSent
+                //     ? Padding(
+                //         padding: EdgeInsets.symmetric(vertical: 6.0),
+                //         child: FlatButton(
+                //           onPressed: () => verifyPhone(phoneNo, context),
+                //           child: Text('resend OTP'),
+                //         ),
+                //       )
+                //     : Container()
               ],
             ),
           ),
@@ -139,33 +148,65 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<void> verifyPhone(phoneNo, BuildContext context) async {
-    final PhoneVerificationCompleted verified = (AuthCredential authResult) {
-      AuthService().signIn(authResult, context);
-    };
+  _signIn(String emaily, String passwordy) async {
+    final _auth = FirebaseAuth.instance;
+    try {
+      final newUser = await _auth.signInWithEmailAndPassword(
+          email: emaily, password: passwordy);
+      if (newUser != null) {
+        print('new User: ${newUser}');
+        // print('new User: ${newUser.user.updatePhoneNumber(PhoneAuthCredential)}');
+        // const snapshot = await _auth.verifyPhoneNumber().on('state_changed', phoneAuthSnapshot => {
+        // console.log('Snapshot state: ', phoneAuthSnapshot.state);
+        //   FirebaseAuth.instance.verifyPhoneNumber(
+        // phoneNumber: phoneNumber,
+        // timeout: const Duration(minutes: 2),
+        // verificationCompleted: (credential) async {
+        //   await (await FirebaseAuth.instance.currentUser.).updatePhoneNumberCredential(credential);
+        //   // either this occurs or the user needs to manually enter the SMS code
+        // },
+        // verificationFailed: null,
+        // codeSent: (verificationId, [forceResendingToken]) async {
+        //   String smsCode;
+        //   // get the SMS code from the user somehow (probably using a text field)
+        //   final AuthCredential credential =
+        //     PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+        //  await FirebaseAuth.instance.currentUser.updatePhoneNumber(credential);
+        // },
+        // codeAutoRetrievalTimeout: null);
 
-    final PhoneVerificationFailed verificationfailed =
-        (FirebaseAuthException authException) {
-      print('${authException.message}');
-    };
-
-    final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
-      this.verificationId = verId;
-      setState(() {
-        this.codeSent = true;
-      });
-    };
-
-    final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
-      this.verificationId = verId;
-    };
-
-    await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phoneNo,
-        timeout: const Duration(seconds: 0),
-        verificationCompleted: verified,
-        verificationFailed: verificationfailed,
-        codeSent: smsSent,
-        codeAutoRetrievalTimeout: autoTimeout);
+        Get.off(HomeCard());
+      } else {}
+    } catch (e) {}
   }
+
+  // Future<void> verifyPhone(phoneNo, BuildContext context) async {
+  //   final PhoneVerificationCompleted verified = (AuthCredential authResult) {
+  //     AuthService().signIn(authResult, context);
+  //   };
+
+  //   final PhoneVerificationFailed verificationfailed =
+  //       (FirebaseAuthException authException) {
+  //     print('${authException.message}');
+  //   };
+
+  //   final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
+  //     this.verificationId = verId;
+  //     setState(() {
+  //       this.codeSent = true;
+  //     });
+  //   };
+
+  //   final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
+  //     this.verificationId = verId;
+  //   };
+
+  //   await FirebaseAuth.instance.verifyPhoneNumber(
+  //       phoneNumber: phoneNo,
+  //       timeout: const Duration(seconds: 0),
+  //       verificationCompleted: verified,
+  //       verificationFailed: verificationfailed,
+  //       codeSent: smsSent,
+  //       codeAutoRetrievalTimeout: autoTimeout);
+  // }
 }

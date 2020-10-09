@@ -19,9 +19,9 @@ import 'package:get/get.dart';
 import '../model/SingleOrder.dart';
 
 class Orders extends StatefulWidget {
-  final String phone;
+  final String email;
 
-  Orders({Key key, @required this.phone}) : super(key: key);
+  Orders({Key key, @required this.email}) : super(key: key);
 
   @override
   _OrdersState createState() => _OrdersState();
@@ -33,9 +33,9 @@ class _OrdersState extends State<Orders> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<List> fetchOrders() async {
-    final queryParameters = {'phone': widget.phone.substring(3)};
+    final queryParameters = {'email': widget.email};
     final uri = Uri.https('arcane-springs-88980.herokuapp.com',
-        '/getUserOrders', {'phone': widget.phone.substring(3)});
+        '/getUserOrders', {'phone': widget.email});
 
     // debugPrint('URI ${uri}');
 

@@ -47,6 +47,10 @@ class _HomeCardState extends State<HomeCard> {
 
     _myVeggieList = fetchVeggies();
 
+    if (FirebaseAuth.instance.currentUser != null) {
+      print(' Firebase User : ${FirebaseAuth.instance.currentUser.email}');
+    }
+
     // getCurrentUser();
   }
 

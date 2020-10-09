@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
             '/login': (context) => Login(),
             '/thanks': (context) => Thanks(),
             '/orders': (context) => Orders(
-                  phone: FirebaseAuth.instance.currentUser.phoneNumber,
+                  email: FirebaseAuth.instance.currentUser.email,
                 ),
           },
         ));
