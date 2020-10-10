@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myhitha/cubit/counter_cubit.dart';
+
+import './homeCard.dart';
+import '../cubit/counter_cubit.dart';
+
+import 'package:get/get.dart';
 
 class Thanks extends StatefulWidget {
   @override
@@ -65,7 +69,9 @@ class _ThanksState extends State<Thanks> {
                             BlocProvider.of<CounterCubit>(context)
                                 .getInitialState();
 
-                            Navigator.popAndPushNamed(context, "/");
+                            Get.offAll(HomeCard());
+
+                            // Navigator.popAndPushNamed(context, "/");
 
                             // Get.offAll(Orders(
                             //     phone: FirebaseAuth

@@ -7,6 +7,7 @@ import './drawerBody.dart';
 import './drawerHeader.dart';
 import '../auth/authservice.dart';
 import 'package:get/get.dart';
+import '../auth/login.dart';
 
 class NavigationDrawer extends StatelessWidget {
   @override
@@ -22,14 +23,18 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.home,
                 text: 'Home',
                 onTap: () => Get.to(HomeCard())),
-            // Divider(),
-            // createDrawerBody(
-            //     icon: Icons.arrow_drop_down_circle,
-            //     text: AuthService().checkAuth() == true ? 'Login' : 'Logout',
-            //     onTap: () => null),
             Divider(),
             createDrawerBody(
-                icon: Icons.shopping_basket,
+                icon: Icons.arrow_drop_down_circle,
+                text: FirebaseAuth.instance.currentUser.isNull
+                    ? 'Login'
+                    : 'Logout',
+                onTap: () => FirebaseAuth.instance.currentUser.isNull
+                    ? Get.to(Login())
+                    : AuthService().signOut()),
+            Divider(),
+            createDrawerBody(
+                icon: Icons.account_circle,
                 text: 'Orders',
                 onTap: () => {
                       debugPrint(

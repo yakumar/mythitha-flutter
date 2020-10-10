@@ -57,6 +57,9 @@ class MyApp extends StatelessWidget {
         child: GetMaterialApp(
           title: 'MyHitha Home',
           theme: ThemeData(
+            buttonTheme: ButtonThemeData(
+                buttonColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 4.0)),
             // This is the theme of your application.
             //
             // Try running your application with "flutter run". You'll see the
