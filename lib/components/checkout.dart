@@ -8,6 +8,9 @@ import 'package:myhitha/cubit/counter_cubit.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import './thanks.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_event.dart';
+import '../bloc/cart_state.dart';
 
 class Checkout extends StatefulWidget {
   @override
@@ -51,10 +54,15 @@ class _CheckoutState extends State<Checkout> {
 
     debugPrint('**** STate');
     debugPrint(cartState);
-    BlocProvider.of<CounterCubit>(context).addPaymentId(response.paymentId);
+    // BlocProvider.of<CounterCubit>(context).addPaymentId(response.paymentId);
+    BlocProvider.of<CartBloc>(context)
+        .add(AddPaymentIdEvent(response.paymentId));
 
-    BlocProvider.of<CounterCubit>(context)
-        .submitOrder(response.paymentId, "mobile_order");
+    // BlocProvider.of<CounterCubit>(context)
+    //     .submitOrder(response.paymentId, "mobile_order");
+
+    BlocProvider.of<CartBloc>(context)
+        .add(SubmitOrderEvent(response.paymentId, "mobile_order"));
 
     Navigator.push(
       context,
@@ -70,9 +78,11 @@ class _CheckoutState extends State<Checkout> {
   }
 
   void _placeCOD() {
-    BlocProvider.of<CounterCubit>(context).codOrder();
+    // BlocProvider.of<CounterCubit>(context).codOrder();
+    BlocProvider.of<CartBloc>(context).add(CodOrderEvent());
 
-    BlocProvider.of<CounterCubit>(context).submitOrder();
+    // BlocProvider.of<CounterCubit>(context).submitOrder();
+    BlocProvider.of<CartBloc>(context).add(SubmitOrderEvent());
 
     Navigator.push(
       context,
@@ -134,13 +144,13 @@ class _CheckoutState extends State<Checkout> {
       body: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.all(20.0),
-        child: BlocBuilder<CounterCubit, CounterState>(
+        child: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
             return Center(
               child: Column(
                 children: [
                   Text(
-                    'Order cost: ${state.completeCart['cost']}',
+                    'Order cost: ${state.completeCart['orderCost']}',
                     style: TextStyle(
                         fontSize: 20.0,
                         color: Colors.deepOrange,
@@ -176,7 +186,7 @@ class _CheckoutState extends State<Checkout> {
                     onPressed: () {
                       _codSelected
                           ? _placeCOD()
-                          : openCheckOut(state.completeCart['cost']);
+                          : openCheckOut(state.completeCart['orderCost']);
                     },
                     child: Text('Order'),
                   ),

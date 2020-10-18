@@ -13,6 +13,7 @@ class NavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      elevation: 10.0,
       child: Container(
         color: Colors.blue,
         child: ListView(

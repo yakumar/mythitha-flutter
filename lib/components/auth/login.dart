@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../utilities/sizes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './authservice.dart';
@@ -14,8 +15,11 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   String email, password;
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passController = TextEditingController();
 
   bool codeSent = false;
+  bool checkBoxValue = false;
 
   // @override
   // void dispose() {
@@ -23,21 +27,50 @@ class _LoginState extends State<Login> {
   //   super.dispose();
   // }
 
+  void autoLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //  var autoLogin = prefs.getInt('autoLogin') ??
+    // still don't know what this is, a boolean?
+    if (prefs.getString('email') != null &&
+        prefs.getString('password') != null) {
+      setState(() {
+        _emailController.text = prefs.getString('email');
+        _passController.text = prefs.getString('password');
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    autoLogin();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _emailController.dispose();
+    _passController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orange[700],
       resizeToAvoidBottomPadding: false,
       body: Container(
+        // color: Colors.orange[700],
         // width: displayWidth(context) / 2,
         margin: EdgeInsets.symmetric(
             horizontal: displayWidth(context) / 18,
             vertical: displayHeight(context) / 4),
         height: displayHeight(context) / 2,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          color: Colors.orange[700],
-        ),
+        // decoration: BoxDecoration(
+        //   borderRadius: BorderRadius.circular(20.0),
+        //   color: Colors.orange[700],
+        // ),
 
         child: Center(
           child: Form(
@@ -51,14 +84,22 @@ class _LoginState extends State<Login> {
                   style: TextStyle(fontSize: 25.0, color: Colors.black87),
                 ),
                 Container(
-                  height: displayHeight(context) / 40,
+                  height: displayHeight(context) / 50,
                 ),
-
                 Padding(
                   padding: EdgeInsets.symmetric(
                       horizontal: displayWidth(context) / 9),
                   child: TextFormField(
+                    controller: _emailController,
+                    // initialValue: '',
+
                     decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(bottom: 20.0),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 12.0),
+                        child:
+                            Icon(Icons.email), // myIcon is a 48px-wide widget.
+                      ),
                       border: OutlineInputBorder(),
                       labelText: 'Email',
                     ),
@@ -88,7 +129,16 @@ class _LoginState extends State<Login> {
                   padding: EdgeInsets.symmetric(
                       horizontal: displayWidth(context) / 9),
                   child: TextFormField(
+                    // initialValue: '',
+
+                    controller: _passController,
                     decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(bottom: 10.0),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 12.0),
+                        child:
+                            Icon(Icons.lock), // myIcon is a 48px-wide widget.
+                      ),
                       border: OutlineInputBorder(),
                       labelText: 'password',
                     ),
@@ -112,7 +162,6 @@ class _LoginState extends State<Login> {
                     },
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: RaisedButton(
@@ -129,7 +178,7 @@ class _LoginState extends State<Login> {
                         //     : verifyPhone(phoneNo, context);
                       }
                     },
-                    child: Text('Sign In'),
+                    child: Text('Login'),
                   ),
                 ),
                 Row(
@@ -137,23 +186,42 @@ class _LoginState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Spacer(),
-                    Expanded(child: Text('not registered..')),
+                    Expanded(child: Text('not registered..?')),
                     Expanded(
                       child: FlatButton(
+                          color: Colors.white38,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6.0)),
                           onPressed: () => Get.off(SignIn()),
                           child: Text('Register')),
-                    )
+                    ),
+                    Container()
                   ],
+                ),
+                Flexible(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity
+                                .leading, //  <-- leading Checkbox
+
+                            title: Text(
+                              "Remember me",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            value: checkBoxValue,
+                            onChanged: (bool val) {
+                              print('bool val:, $checkBoxValue');
+                              setState(() {
+                                checkBoxValue = val;
+                              });
+                            }),
+                      ),
+                      // Flexible(child: Text('Remember'))
+                    ],
+                  ),
                 )
-                // codeSent
-                //     ? Padding(
-                //         padding: EdgeInsets.symmetric(vertical: 6.0),
-                //         child: FlatButton(
-                //           onPressed: () => verifyPhone(phoneNo, context),
-                //           child: Text('resend OTP'),
-                //         ),
-                //       )
-                //     : Container()
               ],
             ),
           ),
@@ -169,6 +237,15 @@ class _LoginState extends State<Login> {
           email: emaily, password: passwordy);
       if (newUser != null) {
         print('new User: ${newUser}');
+        if (checkBoxValue) {
+          SharedPreferences loginPrefs = await SharedPreferences.getInstance();
+          if (loginPrefs.getString('email') != null &&
+              loginPrefs.getString('password') != null) {
+            loginPrefs.clear();
+            loginPrefs.setString('email', '${emaily}');
+            loginPrefs.setString('password', '$passwordy');
+          }
+        }
         // print('new User: ${newUser.user.updatePhoneNumber(PhoneAuthCredential)}');
         // const snapshot = await _auth.verifyPhoneNumber().on('state_changed', phoneAuthSnapshot => {
         // console.log('Snapshot state: ', phoneAuthSnapshot.state);

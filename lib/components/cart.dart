@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myhitha/bloc/veggieBlocModel.dart';
 import 'package:myhitha/cubit/counter_cubit.dart';
 import './thanks.dart';
 import './checkout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_state.dart';
+import '../bloc/cart_event.dart';
 import '../components/auth/login.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../components/auth/authservice.dart';
 
@@ -79,7 +84,7 @@ class _CartState extends State<Cart> {
         backgroundColor: Colors.teal[100],
         title: Text('Shopping Cart'),
       ),
-      body: Container(child: BlocBuilder<CounterCubit, CounterState>(
+      body: Container(child: BlocBuilder<CartBloc, CartState>(
         builder: (context, state) {
           return state.veggieListy != null && state.veggieListy.length > 0
               ? CustomScrollView(
@@ -91,8 +96,8 @@ class _CartState extends State<Cart> {
                       expandedHeight: 100.0,
                       flexibleSpace: FlexibleSpaceBar(
                         centerTitle: true,
-                        title:
-                            Text('Order cost: ${state.completeCart['cost']}'),
+                        title: Text(
+                            'Order cost: ${state.completeCart['orderCost']}'),
                       ),
                     ),
                     SliverList(
@@ -103,11 +108,13 @@ class _CartState extends State<Cart> {
                             shrinkWrap: true,
                             itemCount: state.veggieListy.length,
                             itemBuilder: (context, index) {
+                              VeggieBloc vegBloc =
+                                  VeggieBloc.fromJson(state.veggieListy[index]);
                               var namy = '${state.veggieListy[index]['name']}';
                               return ListTile(
                                   leading: Image.network(
-                                      '${state.veggieListy[index]['imageUrl']}'),
-                                  title: Text(namy),
+                                      '${state.veggieListy[index]['image_url']}'),
+                                  title: Text("${namy}(${namy.tr()})"),
                                   subtitle: Row(
                                     children: [
                                       Text(
@@ -121,7 +128,7 @@ class _CartState extends State<Cart> {
                                           ? Text(' units')
                                           : Text(
                                               '${state.veggieListy[index]['quantity_type']}'),
-                                      Text(' = '),
+                                      Text(' - '),
                                       Text(
                                           '${state.veggieListy[index]['calcPrice']} rs'),
                                     ],
@@ -130,8 +137,7 @@ class _CartState extends State<Cart> {
                                       color: Colors.red,
                                       icon: Icon(Icons.close),
                                       onPressed: () {
-                                        _deleteProduct(context,
-                                            state.veggieListy[index]['name']);
+                                        _deleteProduct(context, vegBloc);
                                       }));
                             },
                           ),
@@ -241,11 +247,15 @@ class _CartState extends State<Cart> {
                                       // }
                                       // });
 
-                                      BlocProvider.of<CounterCubit>(context)
-                                          .addUserDetails(
-                                              name: namey,
-                                              address: addr,
-                                              phone: phoney);
+                                      context.bloc<CartBloc>().add(
+                                          AddUserDetailsEvent(
+                                              namey, phoney, addr));
+
+                                      // BlocProvider.of<CounterCubit>(context)
+                                      //     .addUserDetails(
+                                      //         name: namey,
+                                      //         address: addr,
+                                      //         phone: phoney);
 
                                       // BlocProvider.of<CounterCubit>(context)
                                       //     .submitOrder(
@@ -288,8 +298,10 @@ class _CartState extends State<Cart> {
     );
   }
 
-  _deleteProduct(BuildContext context, String name) {
-    BlocProvider.of<CounterCubit>(context).removeProduct(name);
+  _deleteProduct(BuildContext context, VeggieBloc veggieBloc) {
+    // BlocProvider.of<CounterCubit>(context).removeProduct(name);
+
+    context.bloc<CartBloc>().add(DeleteCartEvent(veggieBloc));
   }
 }
 

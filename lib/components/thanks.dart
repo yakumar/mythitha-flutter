@@ -6,6 +6,12 @@ import '../cubit/counter_cubit.dart';
 
 import 'package:get/get.dart';
 
+import '../bloc/cart_bloc.dart';
+import '../bloc/cart_event.dart';
+import '../bloc/cart_state.dart';
+import '../bloc/cart_event.dart';
+import '../utilities/sizes.dart';
+
 class Thanks extends StatefulWidget {
   @override
   _ThanksState createState() => _ThanksState();
@@ -41,12 +47,13 @@ class _ThanksState extends State<Thanks> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orange[700],
       body: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.all(10.0),
         margin: EdgeInsets.fromLTRB(0, 80.0, 0, 0),
         child: Center(
-          child: BlocBuilder<CounterCubit, CounterState>(
+          child: BlocBuilder<CartBloc, CartState>(
             builder: (context, state) {
               // debugPrint('from THanks State::, ${state.orderId}');
               return state.orderId != null
@@ -55,19 +62,21 @@ class _ThanksState extends State<Thanks> {
                         Container(
                           alignment: Alignment.center,
                           margin: EdgeInsets.all(10.0),
+                          width: displayWidth(context) / 1.1,
                           child: Text(
                             'Order is successfully placed...\n \tYour Order id is : ${state.orderId}',
                             style: TextStyle(
                                 fontStyle: FontStyle.normal,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25.0,
-                                color: Colors.green),
+                                fontSize: 20.0,
+                                color: Colors.white),
                           ),
                         ),
                         FloatingActionButton(
                           onPressed: () {
-                            BlocProvider.of<CounterCubit>(context)
-                                .getInitialState();
+                            // BlocProvider.of<CartBloc>(context)
+
+                            context.bloc<CartBloc>().add(IntialEvent());
 
                             Get.offAll(HomeCard());
 

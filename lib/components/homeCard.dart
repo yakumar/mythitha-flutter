@@ -1,15 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myhitha/bloc/cart_bloc.dart';
 import 'package:myhitha/cubit/counter_cubit.dart';
 import '../utilities/sizes.dart';
 import 'package:http/http.dart' as http;
 import '../model/veggie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../components/auth/authservice.dart';
+import '../bloc/cart_state.dart';
 import '../components/drawer/navigationDrawer.dart';
+import '../bloc/veggieBlocModel.dart';
+import '../bloc/cart_event.dart';
+import './my_flutter_app_icons.dart';
 
 Future<List<Veggie>> fetchVeggies() async {
   final response =
@@ -40,7 +46,7 @@ class _HomeCardState extends State<HomeCard> {
   int _selectedIndex = 0;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-  CounterCubit _counterCubit;
+  // CounterCubit _counterCubit;
   @override
   void initState() {
     super.initState();
@@ -60,39 +66,10 @@ class _HomeCardState extends State<HomeCard> {
     });
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   final CounterCubit counterCubit = BlocProvider.of<CounterCubit>(context);
-  //   setState(() {
-  //     _counterCubit = counterCubit;
-  //   });
-  //   super.didChangeDependencies();
-  // }
-
-  // @override
-  // void dispose() {
-  //   // TODO: implement dispose
-  //   super.dispose();
-  //   _counterCubit.close();
-  //   // CounterCubit blocProvider = BlocProvider.of<CounterCubit>(context);
-  // }
-  // getCurrentUser() async {
-  //   if (auth.currentUser != null) {
-  //     final User user = auth.currentUser;
-  //     await user.updateProfile(displayName: 'Test');
-  //     await user.updateEmail('aviator.in@gmail.com');
-  //     final uid = user.uid;
-  //     // Similarly we can get email as well
-  //     //final uemail = user.email;
-  //     print('****** user');
-  //     print(uid);
-  //     print(user.email);
-  //     //print(uemail);
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
+    context.locale = Locale('te', 'IN');
+
     // final cartViewNotifier = watch(cartChangeNotifierProvider);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -103,7 +80,7 @@ class _HomeCardState extends State<HomeCard> {
             title: Text('Vegetables'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: Icon(MyFlutterApp.fruits),
             title: Text('Fruits'),
           ),
           BottomNavigationBarItem(
@@ -121,7 +98,7 @@ class _HomeCardState extends State<HomeCard> {
         backgroundColor: Colors.teal[200],
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text("Freshies"),
+        title: Text('Freshies'),
 
         actions: [
           auth.currentUser != null
@@ -131,25 +108,39 @@ class _HomeCardState extends State<HomeCard> {
                     AuthService().signOut();
                   })
               : Container(),
-          Stack(
-            children: [
-              BlocBuilder<CounterCubit, CounterState>(
-                builder: (context, state) {
-                  return Text('${state.cartCount}');
-                },
-              ),
-              IconButton(
-                  icon: Icon(Icons.shopping_cart),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/cart');
-                  }),
-            ],
-          )
+          // Stack(
+          //   children: [
+          //     BlocBuilder<CartBloc, CartState>(
+          //       builder: (context, state) {
+          //         return Text('${state.cartCount}');
+          //       },
+          //     ),
+          //     IconButton(
+          //         icon: Icon(Icons.shopping_cart),
+          //         onPressed: () {
+          //           Navigator.pushNamed(context, '/cart');
+          //         }),
+          //   ],
+          // )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _futureBuilder(context),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _futureBuilder(context),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.orange[800],
+        onPressed: () {
+          Navigator.pushNamed(context, '/cart');
+        },
+        label: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            return Text('${state.cartCount}');
+          },
+        ),
+        icon: Icon(Icons.shopping_cart),
       ),
     );
   }
@@ -177,22 +168,40 @@ class _HomeCardState extends State<HomeCard> {
             }
 
             return SingleChildScrollView(
-              child: GridView.builder(
-                  physics: ClampingScrollPhysics(),
-                  itemCount: veggiesListed?.length,
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 7.0,
-                      childAspectRatio:
-                          displayWidth(context) / displayHeight(context) * 1.5),
-                  itemBuilder: (BuildContext context, int index) {
-                    Veggie hotVeggie = veggiesListed[index];
-                    // debugPrint('Veggie List: ${hotVeggie.category}');
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    height: displayHeight(context) / 24,
+                    width: displayWidth(context),
+                    color: Colors.red,
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 40.0, vertical: 1.0),
+                    child: Text(
+                      'Order by 9:00 pm for next day delivery',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14.0),
+                    ),
+                  ),
+                  GridView.builder(
+                      physics: ClampingScrollPhysics(),
+                      itemCount: veggiesListed?.length,
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 7.0,
+                          childAspectRatio: displayWidth(context) /
+                              displayHeight(context) *
+                              1.5),
+                      itemBuilder: (BuildContext context, int index) {
+                        Veggie hotVeggie = veggiesListed[index];
+                        // debugPrint('Veggie List: ${hotVeggie.category}');
 
-                    return _vegCard(context, hotVeggie);
-                  }),
+                        return _vegCard(context, hotVeggie);
+                      }),
+                ],
+              ),
             );
           } else {
             return Container(
@@ -243,9 +252,22 @@ class _HomeCardState extends State<HomeCard> {
                     height: displayHeight(context) / 6,
                   ),
                 ),
-                Text(
-                  "${newbie.name}".toUpperCase(),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${newbie.name}".toUpperCase(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 13.0),
+                    ),
+                    newbie.name.tr() == "not found"
+                        ? Container()
+                        : Text(
+                            "(${newbie.name.tr()})".toUpperCase(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12.0),
+                          )
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -365,22 +387,35 @@ class _HomeCardState extends State<HomeCard> {
                         onPressed: () {
                           // print('Add');
 
-                          Map<String, dynamic> productMap = {};
+                          // vegBloc
+                          VeggieBloc vegBloc = VeggieBloc(
+                              name: newbie.name,
+                              category: newbie.category,
+                              price: newbie.price,
+                              veggram_id: newbie.veggieId,
+                              image_url: newbie.imageUrl,
+                              weight: newbie.quantity,
+                              quantity: quantityCount['${newbie.name}'] *
+                                  newbie.quantity,
+                              quantity_type: newbie.quantityType);
+                          context.bloc<CartBloc>().add(AddCartEvent(
+                              vegBloc, quantityCount['${newbie.name}']));
+                          // Map<String, dynamic> productMap = {};
 
-                          productMap['name'] = newbie.name;
-                          productMap['price'] = newbie.price;
-                          productMap['quantity'] =
-                              quantityCount['${newbie.name}'] * newbie.quantity;
-                          // productMap['weight'] = quantityCount;
-                          productMap['imageUrl'] = newbie.imageUrl;
-                          productMap['cPrice'] =
-                              quantityCount['${newbie.name}'] * newbie.price;
-                          productMap['calcPrice'] =
-                              quantityCount['${newbie.name}'] * newbie.price;
-                          productMap['priceQuantity'] =
-                              quantityCount['${newbie.name}'];
-                          productMap['quantity_type'] = newbie.quantityType;
-                          productMap['weight'] = newbie.quantity;
+                          // productMap['name'] = newbie.name;
+                          // productMap['price'] = newbie.price;
+                          // productMap['quantity'] =
+                          //     quantityCount['${newbie.name}'] * newbie.quantity;
+                          // // productMap['weight'] = quantityCount;
+                          // productMap['imageUrl'] = newbie.imageUrl;
+                          // productMap['cPrice'] =
+                          //     quantityCount['${newbie.name}'] * newbie.price;
+                          // productMap['calcPrice'] =
+                          //     quantityCount['${newbie.name}'] * newbie.price;
+                          // productMap['priceQuantity'] =
+                          //     quantityCount['${newbie.name}'];
+                          // productMap['quantity_type'] = newbie.quantityType;
+                          // productMap['weight'] = newbie.quantity;
 
                           // productMap['vegId'] = newbie.veggieId;
                           // print('Calc price');
@@ -393,7 +428,7 @@ class _HomeCardState extends State<HomeCard> {
 
                           // BlocProvider.of<CounterCubit>(context)
                           //     .addItem(productMap);
-                          context.bloc<CounterCubit>().addItem(productMap);
+                          // context.bloc<CounterCubit>().addItem(productMap);
 
                           setState(() {
                             quantityCount['${newbie.name}'] = 0;
