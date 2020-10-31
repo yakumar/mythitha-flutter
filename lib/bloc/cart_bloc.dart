@@ -40,16 +40,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
         // var myMap = Map<String, dynamic>.from(item);
 
-        Map<String, dynamic> myItem = item.toMap();
-        myItem['priceQuantity'] = quantityAdded;
-        myItem['calcPrice'] = quantityAdded * myItem['price'];
-
-        print('from addItem ITEM!! ...state.veggieListy : ${myItem}');
-        // tempVegCart2.add(myItem);
-        // var tempVegCart2 = [...state.veggieListy];
-        print(
-            'from addItem COunterCubit ...state.veggieListy 2: ${tempVegCart2}');
-
         var filteredMapy = tempVegCart2.firstWhere(
             (elem) => elem['name'] == item.name,
             orElse: () => null);
@@ -58,15 +48,26 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         print(filteredMapy);
 
         if (filteredMapy != null) {
-          filteredMapy['quantity'] = filteredMapy['quantity'] + item.quantity;
-          filteredMapy['priceQuantity'] =
-              filteredMapy['priceQuantity'] + quantityAdded;
+          Map<String, dynamic> myItem = item.toMap();
+          filteredMapy['priceQuantity'] = filteredMapy['priceQuantity'] + 1;
+          filteredMapy['quantity'] = myItem['quantity'] + myItem['quantity'];
 
-          // print('quanityt');
-
-          // filteredMapy['quantity']);
           filteredMapy['calcPrice'] =
-              filteredMapy['priceQuantity'] * filteredMapy['price'];
+              filteredMapy['calcPrice'] + myItem['price'];
+
+          print('from addItem ITEM!! ...state.veggieListy : ${myItem}');
+          // tempVegCart2.add(myItem);
+          // var tempVegCart2 = [...state.veggieListy];
+          print(
+              'from addItem COunterCubit ...state.veggieListy 2: ${tempVegCart2}');
+          // filteredMapy['quantity'] = filteredMapy['quantity'] + 1;
+          // filteredMapy['priceQuantity'] = filteredMapy['priceQuantity'] + 1;
+
+          // // print('quanityt');
+
+          // // filteredMapy['quantity']);
+          // filteredMapy['calcPrice'] =
+          //     filteredMapy['priceQuantity'] * filteredMapy['price'];
 
           var numList =
               tempVegCart2.map((elem) => elem['priceQuantity']).toList();
@@ -97,8 +98,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           // var myMap = Map<String, dynamic>.from(item);
           // var quan = 0;
           Map<String, dynamic> myItem = item.toMap();
-          myItem['priceQuantity'] = quantityAdded;
-          myItem['calcPrice'] = quantityAdded * myItem['price'];
+          myItem['quantity'] = 1;
+
+          myItem['calcPrice'] = myItem['price'];
+
+          myItem['priceQuantity'] = 1;
+          // myItem['calcPrice'] = 1 * myItem['price'];
 
           print('Quantity Added, ${quantityAdded}');
 
@@ -137,8 +142,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         print('Quantity Added, ${quantityAdded}');
 
         Map<String, dynamic> myItem = item.toMap();
-        myItem['priceQuantity'] = quantityAdded;
-        myItem['calcPrice'] = quantityAdded * myItem['price'];
+        myItem['priceQuantity'] = 1;
+        myItem['calcPrice'] = 1 * myItem['price'];
 
         print('from addItem ITEM!! ...state.veggieListy : ${myItem}');
         tempVegCart.add(myItem);
@@ -172,6 +177,67 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         print(state.completeCart);
         int orderId;
         yield AfterAddState(tempVegCart, completeAddCart, carty, orderId);
+      }
+    } else if (event is RemoveCartEvent) {
+      VeggieBloc item = event.veggie;
+      int quantityAdded = event.quantityAdded;
+      // int quantityAdded = event.quantityAdded;
+
+      var removetempVegCart = state.veggieListy;
+
+      var filteredMapy = removetempVegCart
+          .firstWhere((elem) => elem['name'] == item.name, orElse: () => null);
+
+      print("*** Filtered MAP");
+      print(filteredMapy);
+
+      if (filteredMapy != null) {
+        Map<String, dynamic> myItem = item.toMap();
+        filteredMapy['priceQuantity'] = filteredMapy['priceQuantity'] - 1;
+        filteredMapy['quantity'] = myItem['quantity'] - myItem['quantity'];
+
+        filteredMapy['calcPrice'] = filteredMapy['calcPrice'] - myItem['price'];
+
+        print('from addItem ITEM!! ...state.veggieListy : ${myItem}');
+        // removetempVegCart.add(myItem);
+        // var removetempVegCart = [...state.veggieListy];
+        print(
+            'from addItem COunterCubit ...state.veggieListy 2: ${removetempVegCart}');
+        // filteredMapy['quantity'] = filteredMapy['quantity'] + 1;
+        // filteredMapy['priceQuantity'] = filteredMapy['priceQuantity'] + 1;
+
+        // // print('quanityt');
+
+        // // filteredMapy['quantity']);
+        // filteredMapy['calcPrice'] =
+        //     filteredMapy['priceQuantity'] * filteredMapy['price'];
+        if (filteredMapy['priceQuantity'] == 0) {
+          removetempVegCart.removeWhere((veg) => veg['name'] == item.name);
+        }
+
+        var numList =
+            removetempVegCart.map((elem) => elem['priceQuantity']).toList();
+
+        var carty = numList.fold(0, (curr, next) => curr + next);
+        List<dynamic> myArr =
+            removetempVegCart.map((mapy) => mapy['calcPrice']).toList();
+
+        int orderCost4 =
+            myArr.fold(0, (previousValue, element) => previousValue + element);
+
+        print('cart count:');
+        print('state.cartCount');
+        print('*****');
+        print('complete cart');
+        print('state.completeCart');
+        Map<String, dynamic> completeAddCart = {
+          "products": removetempVegCart,
+          "orderCost": orderCost4
+        };
+        int orderId;
+
+        yield AfterRemoveState(
+            removetempVegCart, completeAddCart, carty, orderId);
       }
     } else if (event is DeleteCartEvent) {
       VeggieBloc item = event.veggie;

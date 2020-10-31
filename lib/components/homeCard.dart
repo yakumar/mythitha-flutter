@@ -16,6 +16,8 @@ import '../components/drawer/navigationDrawer.dart';
 import '../bloc/veggieBlocModel.dart';
 import '../bloc/cart_event.dart';
 import './my_flutter_app_icons.dart';
+import './cart.dart';
+import './bottom_bar_icons.dart';
 
 Future<List<Veggie>> fetchVeggies() async {
   final response =
@@ -66,6 +68,12 @@ class _HomeCardState extends State<HomeCard> {
     });
   }
 
+  updateQuantityAdded(String name) {
+    setState(() {
+      quantityCount.remove(name);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     context.locale = Locale('te', 'IN');
@@ -76,15 +84,15 @@ class _HomeCardState extends State<HomeCard> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_grocery_store),
+            icon: Icon(BottomBarIcons.broccoli),
             title: Text('Vegetables'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(MyFlutterApp.fruits),
+            icon: Icon(BottomBarIcons.apple),
             title: Text('Fruits'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
+            icon: Icon(BottomBarIcons.almond),
             title: Text('Dry Fruits'),
           ),
         ],
@@ -133,7 +141,12 @@ class _HomeCardState extends State<HomeCard> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.orange[800],
         onPressed: () {
-          Navigator.pushNamed(context, '/cart');
+          // Navigator.pushNamed(context, '/cart');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Cart(removeItem: updateQuantityAdded)),
+          );
         },
         label: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
@@ -193,7 +206,7 @@ class _HomeCardState extends State<HomeCard> {
                           mainAxisSpacing: 7.0,
                           childAspectRatio: displayWidth(context) /
                               displayHeight(context) *
-                              1.5),
+                              1.4),
                       itemBuilder: (BuildContext context, int index) {
                         Veggie hotVeggie = veggiesListed[index];
                         // debugPrint('Veggie List: ${hotVeggie.category}');
@@ -252,20 +265,20 @@ class _HomeCardState extends State<HomeCard> {
                     height: displayHeight(context) / 6,
                   ),
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "${newbie.name}".toUpperCase(),
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 13.0),
+                          fontWeight: FontWeight.bold, fontSize: 14.0),
                     ),
                     newbie.name.tr() == "not found"
                         ? Container()
                         : Text(
                             "(${newbie.name.tr()})".toUpperCase(),
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 12.0),
+                                fontWeight: FontWeight.bold, fontSize: 13.0),
                           )
                   ],
                 ),
@@ -306,6 +319,24 @@ class _HomeCardState extends State<HomeCard> {
                                           print('******');
                                           print(quantityCount);
                                           print('******');
+                                          VeggieBloc vegBloc = VeggieBloc(
+                                              priceQuantity: 0,
+                                              name: newbie.name,
+                                              category: newbie.category,
+                                              price: newbie.price,
+                                              veggram_id: newbie.veggieId,
+                                              image_url: newbie.imageUrl,
+                                              weight: newbie.quantity,
+                                              quantity: quantityCount[
+                                                      '${newbie.name}'] *
+                                                  newbie.quantity,
+                                              quantity_type:
+                                                  newbie.quantityType);
+                                          context.bloc<CartBloc>().add(
+                                              RemoveCartEvent(
+                                                  vegBloc,
+                                                  quantityCount[
+                                                      '${newbie.name}']));
                                         },
                                       )
                                     : null;
@@ -314,12 +345,18 @@ class _HomeCardState extends State<HomeCard> {
                           : IconButton(
                               icon: Icon(Icons.remove),
                               onPressed: () {
-                                quantityCount.addAll({'${newbie.name}': 0});
                                 setState(
                                   () {
-                                    quantityCount['${newbie.name}'] > 0
-                                        ? quantityCount['${newbie.name}'] -= 1
-                                        : null;
+                                    quantityCount.addAll({'${newbie.name}': 0});
+
+                                    if (quantityCount['${newbie.name}'] > 0) {
+                                      quantityCount['${newbie.name}'] -= 1;
+
+                                      // setState(() {
+                                      //   quantityCount['${newbie.name}'] = 0;
+                                      // });
+
+                                    } else {}
                                     print('******');
                                     print(quantityCount);
                                     print('******');
@@ -351,20 +388,15 @@ class _HomeCardState extends State<HomeCard> {
                           ? IconButton(
                               icon: Icon(Icons.add),
                               onPressed: () {
-                                setState(
-                                  () {
-                                    quantityCount['${newbie.name}'] += 1;
-                                    // print('******');
-                                    // print(quantityCount);
-                                    // print('******');
-                                  },
-                                );
-                              },
-                            )
-                          : IconButton(
-                              icon: Icon(Icons.add),
-                              onPressed: () {
-                                quantityCount.addAll({'${newbie.name}': 0});
+                                // setState(
+                                //   () {
+                                //     quantityCount['${newbie.name}'] += 1;
+                                //     // print('******');
+                                //     // print(quantityCount);
+                                //     // print('******');
+                                //   },
+                                // );
+                                // quantityCount.addAll({'${newbie.name}': 0});
                                 setState(
                                   () {
                                     quantityCount['${newbie.name}'] += 1;
@@ -373,69 +405,117 @@ class _HomeCardState extends State<HomeCard> {
                                     print('******');
                                   },
                                 );
+                                VeggieBloc vegBloc = VeggieBloc(
+                                    priceQuantity: 0,
+                                    name: newbie.name,
+                                    category: newbie.category,
+                                    price: newbie.price,
+                                    veggram_id: newbie.veggieId,
+                                    image_url: newbie.imageUrl,
+                                    weight: newbie.quantity,
+                                    quantity: quantityCount['${newbie.name}'] *
+                                        newbie.quantity,
+                                    quantity_type: newbie.quantityType);
+                                context.bloc<CartBloc>().add(AddCartEvent(
+                                    vegBloc, quantityCount['${newbie.name}']));
+                                // setState(() {
+                                //   quantityCount['${newbie.name}'] = 0;
+                                // });
+                              },
+                            )
+                          : IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    quantityCount.addAll({'${newbie.name}': 0});
+
+                                    quantityCount['${newbie.name}'] += 1;
+                                    print('******');
+                                    print(quantityCount);
+                                    print('******');
+                                  },
+                                );
+                                VeggieBloc vegBloc = VeggieBloc(
+                                    priceQuantity: 0,
+                                    name: newbie.name,
+                                    category: newbie.category,
+                                    price: newbie.price,
+                                    veggram_id: newbie.veggieId,
+                                    image_url: newbie.imageUrl,
+                                    weight: newbie.quantity,
+                                    quantity: quantityCount['${newbie.name}'] *
+                                        newbie.quantity,
+                                    quantity_type: newbie.quantityType);
+                                context.bloc<CartBloc>().add(AddCartEvent(
+                                    vegBloc, quantityCount['${newbie.name}']));
+                                // setState(() {
+                                //   quantityCount['${newbie.name}'] = 0;
+                                // });
                               },
                             ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: RaisedButton(
-                        padding: EdgeInsets.symmetric(horizontal: 4.0),
-                        color: Colors.blue,
-                        child: Text(
-                          'Add',
-                        ),
-                        onPressed: () {
-                          // print('Add');
+                    // Expanded(
+                    //   flex: 1,
+                    //   child: RaisedButton(
+                    //     padding: EdgeInsets.symmetric(horizontal: 4.0),
+                    //     color: Colors.blue,
+                    //     child: Text(
+                    //       'Add',
+                    //     ),
+                    //     onPressed: () {
+                    //       // print('Add');
 
-                          // vegBloc
-                          VeggieBloc vegBloc = VeggieBloc(
-                              name: newbie.name,
-                              category: newbie.category,
-                              price: newbie.price,
-                              veggram_id: newbie.veggieId,
-                              image_url: newbie.imageUrl,
-                              weight: newbie.quantity,
-                              quantity: quantityCount['${newbie.name}'] *
-                                  newbie.quantity,
-                              quantity_type: newbie.quantityType);
-                          context.bloc<CartBloc>().add(AddCartEvent(
-                              vegBloc, quantityCount['${newbie.name}']));
-                          // Map<String, dynamic> productMap = {};
+                    //       // vegBloc
+                    //       // VeggieBloc vegBloc = VeggieBloc(
+                    //       //     priceQuantity: 0,
+                    //       //     name: newbie.name,
+                    //       //     category: newbie.category,
+                    //       //     price: newbie.price,
+                    //       //     veggram_id: newbie.veggieId,
+                    //       //     image_url: newbie.imageUrl,
+                    //       //     weight: newbie.quantity,
+                    //       //     quantity: quantityCount['${newbie.name}'] *
+                    //       //         newbie.quantity,
+                    //       //     quantity_type: newbie.quantityType);
+                    //       // context.bloc<CartBloc>().add(AddCartEvent(
+                    //       //     vegBloc, quantityCount['${newbie.name}']));
+                    //       // Map<String, dynamic> productMap = {};
 
-                          // productMap['name'] = newbie.name;
-                          // productMap['price'] = newbie.price;
-                          // productMap['quantity'] =
-                          //     quantityCount['${newbie.name}'] * newbie.quantity;
-                          // // productMap['weight'] = quantityCount;
-                          // productMap['imageUrl'] = newbie.imageUrl;
-                          // productMap['cPrice'] =
-                          //     quantityCount['${newbie.name}'] * newbie.price;
-                          // productMap['calcPrice'] =
-                          //     quantityCount['${newbie.name}'] * newbie.price;
-                          // productMap['priceQuantity'] =
-                          //     quantityCount['${newbie.name}'];
-                          // productMap['quantity_type'] = newbie.quantityType;
-                          // productMap['weight'] = newbie.quantity;
+                    //       // productMap['name'] = newbie.name;
+                    //       // productMap['price'] = newbie.price;
+                    //       // productMap['quantity'] =
+                    //       //     quantityCount['${newbie.name}'] * newbie.quantity;
+                    //       // // productMap['weight'] = quantityCount;
+                    //       // productMap['imageUrl'] = newbie.imageUrl;
+                    //       // productMap['cPrice'] =
+                    //       //     quantityCount['${newbie.name}'] * newbie.price;
+                    //       // productMap['calcPrice'] =
+                    //       //     quantityCount['${newbie.name}'] * newbie.price;
+                    //       // productMap['priceQuantity'] =
+                    //       //     quantityCount['${newbie.name}'];
+                    //       // productMap['quantity_type'] = newbie.quantityType;
+                    //       // productMap['weight'] = newbie.quantity;
 
-                          // productMap['vegId'] = newbie.veggieId;
-                          // print('Calc price');
-                          // print(productMap['calcPrice']);
+                    //       // productMap['vegId'] = newbie.veggieId;
+                    //       // print('Calc price');
+                    //       // print(productMap['calcPrice']);
 
-                          // cartStore.addItem(productMap);
-                          // cartStore.increment();
+                    //       // cartStore.addItem(productMap);
+                    //       // cartStore.increment();
 
-                          // _counterCubit.addItem(productMap);
+                    //       // _counterCubit.addItem(productMap);
 
-                          // BlocProvider.of<CounterCubit>(context)
-                          //     .addItem(productMap);
-                          // context.bloc<CounterCubit>().addItem(productMap);
+                    //       // BlocProvider.of<CounterCubit>(context)
+                    //       //     .addItem(productMap);
+                    //       // context.bloc<CounterCubit>().addItem(productMap);
 
-                          setState(() {
-                            quantityCount['${newbie.name}'] = 0;
-                          });
-                        },
-                      ),
-                    ),
+                    //       // setState(() {
+                    //       //   quantityCount['${newbie.name}'] = 0;
+                    //       // });
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 ),
               ],

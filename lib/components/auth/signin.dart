@@ -255,6 +255,9 @@ class _SignInState extends State<SignIn> {
             loginPrefs.clear();
             loginPrefs.setString('email', '${emaily}');
             loginPrefs.setString('password', '$passwordy');
+          } else {
+            loginPrefs.setString('email', emaily);
+            loginPrefs.setString('password', passwordy);
           }
         }
         // print('new User: ${newUser.user.updatePhoneNumber(PhoneAuthCredential)}');

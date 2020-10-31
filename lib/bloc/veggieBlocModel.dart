@@ -26,21 +26,22 @@ class VeggieBloc extends Equatable {
   final int weight;
   final int price;
   final int quantity;
+  final int priceQuantity;
   final String quantity_type;
   final String image_url;
   final int veggram_id;
   final String category;
 
-  VeggieBloc({
-    this.veggram_id,
-    this.name,
-    this.weight,
-    this.price,
-    this.quantity,
-    this.quantity_type,
-    this.image_url,
-    this.category,
-  });
+  VeggieBloc(
+      {this.veggram_id,
+      this.name,
+      this.weight,
+      this.price,
+      this.quantity,
+      this.quantity_type,
+      this.image_url,
+      this.category,
+      this.priceQuantity});
 
   factory VeggieBloc.fromJson(Map<String, dynamic> json) {
     return VeggieBloc(
@@ -52,6 +53,7 @@ class VeggieBloc extends Equatable {
       price: json['price'],
       image_url: json['image_url'],
       category: json['category'],
+      priceQuantity: json['priceQuantity'],
     );
   }
   Map<String, dynamic> toMap() {
@@ -64,6 +66,7 @@ class VeggieBloc extends Equatable {
       'price': price,
       'image_url': image_url,
       'category': category,
+      'priceQuantity': priceQuantity
     };
   }
 
@@ -78,6 +81,7 @@ class VeggieBloc extends Equatable {
         quantity_type,
         image_url,
         category,
+        priceQuantity,
       ];
 
   VeggieBloc copyWith({
@@ -93,14 +97,14 @@ class VeggieBloc extends Equatable {
     int calcPrice,
   }) {
     return VeggieBloc(
-      category: this.category,
-      name: this.name,
-      image_url: this.image_url,
-      weight: this.weight,
-      quantity: this.quantity,
-      quantity_type: this.quantity_type,
-      price: this.price,
-      veggram_id: this.veggram_id,
-    );
+        category: this.category,
+        name: this.name,
+        image_url: this.image_url,
+        weight: this.weight,
+        quantity: this.quantity,
+        quantity_type: this.quantity_type,
+        price: this.price,
+        veggram_id: this.veggram_id,
+        priceQuantity: this.priceQuantity);
   }
 }

@@ -35,6 +35,15 @@ class AfterAddState extends CartState {
       : super(veggieListy, completeCart, cartCount, orderId);
 }
 
+class AfterRemoveState extends CartState {
+  // final List<Veggie> veggieListy;
+  //   final Map<String, dynamic> completeCart;
+
+  AfterRemoveState(List<Map> veggieListy, Map<String, dynamic> completeCart,
+      int cartCount, int orderId)
+      : super(veggieListy, completeCart, cartCount, orderId);
+}
+
 class AfterDeleteState extends CartState {
   AfterDeleteState(List<Map> veggieListy, Map<String, dynamic> completeCart,
       int cartCount, int orderId)

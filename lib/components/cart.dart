@@ -17,11 +17,15 @@ import '../components/auth/authservice.dart';
 import 'package:flutter/scheduler.dart';
 
 class Cart extends StatefulWidget {
+  final Function removeItem;
+  Cart({this.removeItem});
   @override
-  _CartState createState() => _CartState();
+  _CartState createState() => _CartState(removeItem: removeItem);
 }
 
 class _CartState extends State<Cart> {
+  final Function removeItem;
+  _CartState({this.removeItem});
   final _formKey = GlobalKey<FormState>();
   int phoney;
   String namey;
@@ -138,6 +142,7 @@ class _CartState extends State<Cart> {
                                       icon: Icon(Icons.close),
                                       onPressed: () {
                                         _deleteProduct(context, vegBloc);
+                                        removeItem(vegBloc.name);
                                       }));
                             },
                           ),

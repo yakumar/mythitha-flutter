@@ -19,6 +19,13 @@ class AddCartEvent extends CartEvent {
   AddCartEvent(this.veggie, this.quantityAdded);
 }
 
+class RemoveCartEvent extends CartEvent {
+  final VeggieBloc veggie;
+  final int quantityAdded;
+
+  RemoveCartEvent(this.veggie, this.quantityAdded);
+}
+
 class DeleteCartEvent extends CartEvent {
   final VeggieBloc veggie;
   // final int quantityAdded;

@@ -214,7 +214,7 @@ class _LoginState extends State<Login> {
                             onChanged: (bool val) {
                               print('bool val:, $checkBoxValue');
                               setState(() {
-                                checkBoxValue = val;
+                                checkBoxValue = !checkBoxValue;
                               });
                             }),
                       ),
@@ -235,6 +235,9 @@ class _LoginState extends State<Login> {
     try {
       final newUser = await _auth.signInWithEmailAndPassword(
           email: emaily, password: passwordy);
+      var emailPersist = emaily;
+      var passwordPersist = passwordy;
+
       if (newUser != null) {
         print('new User: ${newUser}');
         if (checkBoxValue) {
@@ -242,10 +245,17 @@ class _LoginState extends State<Login> {
           if (loginPrefs.getString('email') != null &&
               loginPrefs.getString('password') != null) {
             loginPrefs.clear();
-            loginPrefs.setString('email', '${emaily}');
-            loginPrefs.setString('password', '$passwordy');
+            loginPrefs.setString('email', '${emailPersist}');
+            loginPrefs.setString('password', '$passwordPersist');
+            emailPersist = "";
+
+            passwordPersist = "";
+          } else {
+            loginPrefs.setString('email', emaily);
+            loginPrefs.setString('password', passwordy);
           }
-        }
+        } else {}
+        Get.off(HomeCard());
         // print('new User: ${newUser.user.updatePhoneNumber(PhoneAuthCredential)}');
         // const snapshot = await _auth.verifyPhoneNumber().on('state_changed', phoneAuthSnapshot => {
         // console.log('Snapshot state: ', phoneAuthSnapshot.state);
@@ -266,7 +276,6 @@ class _LoginState extends State<Login> {
         // },
         // codeAutoRetrievalTimeout: null);
 
-        Get.off(HomeCard());
       } else {}
     } catch (e) {}
   }
