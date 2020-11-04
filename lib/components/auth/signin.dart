@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utilities/sizes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -246,6 +247,8 @@ class _SignInState extends State<SignIn> {
     try {
       final newUser = await _auth.createUserWithEmailAndPassword(
           email: emaily, password: passwordy);
+
+      print('response => ${newUser}');
       if (newUser != null) {
         print('new User: ${newUser}');
         if (checkBoxValue) {
@@ -281,8 +284,16 @@ class _SignInState extends State<SignIn> {
         // codeAutoRetrievalTimeout: null);
 
         Get.off(HomeCard());
-      } else {}
-    } catch (e) {}
+      } else {
+        // print('${newUser}');
+        print('response  is null');
+      }
+    } catch (signUpError) {
+      // print('Signup error : ,${signUpError}');
+      String result = signUpError.toString().split(']')[1];
+
+      Get.snackbar('Error', "${result}", backgroundColor: Colors.red);
+    }
   }
 
   // Future<void> verifyPhone(phoneNo, BuildContext context) async {

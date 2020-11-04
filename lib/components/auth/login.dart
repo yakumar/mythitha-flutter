@@ -277,7 +277,12 @@ class _LoginState extends State<Login> {
         // codeAutoRetrievalTimeout: null);
 
       } else {}
-    } catch (e) {}
+    } catch (signUpError) {
+      // print('Signup error : ,${signUpError}');
+      String result = signUpError.toString().split(']')[1];
+
+      Get.snackbar('Error', "${result}", backgroundColor: Colors.red);
+    }
   }
 
   // Future<void> verifyPhone(phoneNo, BuildContext context) async {
